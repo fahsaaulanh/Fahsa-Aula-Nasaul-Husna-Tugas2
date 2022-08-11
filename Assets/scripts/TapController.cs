@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class TapController : MonoBehaviour {
+public class TapController : MonoBehaviour
+{
 
-	public delegate void PlayerDelegate ();
+	public delegate void PlayerDelegate();
 	public static event PlayerDelegate OnPlayerDied;
 	public static event PlayerDelegate OnPlayerScored;
 
 
-	public float tapForce=10;
-	public float tiltSmooth=5;
+	public float tapForce = 10;
+	public float tiltSmooth = 5;
 	public Vector3 startPos;
 
 	public AudioSource tapAudio;
@@ -20,78 +21,89 @@ public class TapController : MonoBehaviour {
 
 
 
-	Rigidbody2D rigidbody;
+	Rigidbody2D rb;
 	Quaternion downrotation;
 	Quaternion forwardrotation;
 
 	GameManager game;
 
 
-	void Start(){
-		rigidbody = GetComponent<Rigidbody2D> ();
-		downrotation = Quaternion.Euler (0, 0, -90);
-		forwardrotation = Quaternion.Euler (0, 0, 35);
+	void Start()
+	{
+		rb = GetComponent<Rigidbody2D>();
+		downrotation = Quaternion.Euler(0, 0, -90);
+		forwardrotation = Quaternion.Euler(0, 0, 35);
 		game = GameManager.Instance;
-		rigidbody.simulated = false;
+		rb.simulated = false;
 	}
 
-	void OnEnable(){
+	void OnEnable()
+	{
 		GameManager.OnGameStarted += OnGameStarted;
 		GameManager.OnGameOverConfirmed += OnGameOverConfirmed;
 	}
 
-	void OnDisable(){
+	void OnDisable()
+	{
 		GameManager.OnGameStarted -= OnGameStarted;
 		GameManager.OnGameOverConfirmed -= OnGameOverConfirmed;
-	
-	}
-
-	void OnGameStarted(){
-		rigidbody.velocity = Vector3.zero;
-		rigidbody.simulated = true;
 
 	}
-	void OnGameOverConfirmed(){
+
+	void OnGameStarted()
+	{
+		Debug.Log("masuk");
+		rb.velocity = Vector3.zero;
+		rb.simulated = true;
+
+	}
+	void OnGameOverConfirmed()
+	{
 		transform.localPosition = startPos;
 		transform.rotation = Quaternion.identity;
 	}
-	void Update(){
-		if (game.GameOver) {
-			rigidbody.simulated = false;
+	void Update()
+	{
+		if (game.GameOver)
+		{
+			rb.simulated = false;
 			return;
 		}
-			
-		if(Input.GetMouseButtonDown(0))
-			{
-			tapAudio.Play ();
+
+		if (Input.GetMouseButtonDown(0))
+		{
+			tapAudio.Play();
 			transform.rotation = forwardrotation;
-			rigidbody.velocity = Vector3.zero;
-			rigidbody.AddForce (Vector2.down * tapForce, ForceMode2D.Force);
+			rb.velocity = Vector3.zero;
+			rb.AddForce(Vector2.up * tapForce, ForceMode2D.Force);
 
-			}
+		}
 
-		transform.rotation = Quaternion.Lerp (transform.rotation, downrotation, tiltSmooth * Time.deltaTime);
-	
-	
+		transform.rotation = Quaternion.Lerp(transform.rotation, downrotation, tiltSmooth * Time.deltaTime);
+
+
 	}
 
-	void OnTriggerEnter2D(Collider2D col){
+	void OnTriggerEnter2D(Collider2D col)
+	{
 
-		if (col.gameObject.tag == "ScoreZone") {
-		
-			OnPlayerScored ();
+		if (col.gameObject.tag == "ScoreZone")
+		{
+
+			OnPlayerScored();
 			scoreAudio.Play();
 		}
 
-		if (col.gameObject.tag == "DeadZones") {
-		
-			rigidbody.simulated = false;
-			OnPlayerDied ();
+		if (col.gameObject.tag == "DeadZone")
+		{
+
+			rb.simulated = false;
+			OnPlayerDied();
 			dieAudio.Play();
 		}
-	
-	
-	
+
+
+
 	}
 
 }

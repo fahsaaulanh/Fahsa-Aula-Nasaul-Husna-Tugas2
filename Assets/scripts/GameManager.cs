@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
 	public GameObject gameOverPage;
 	public GameObject countdownPage;
 	public Text scoreText;
+	public Text highScore;
 
 	enum PageState{
 		None,
@@ -25,16 +26,23 @@ public class GameManager : MonoBehaviour {
 	int score = 0;
 	bool gameOver = true;
 
-	public bool GameOver { get { return !gameOver; } }
+	public bool GameOver { get { return gameOver; } }
 
 	void Awake(){
 	
 		Instance = this;
 	}
 
-	void OnEnable(){
+    private void FixedUpdate()
+    {
+		int _highScore = PlayerPrefs.GetInt("highscore");
+		highScore.text = "HIgh Score : " + _highScore.ToString();
+    }
+
+    void OnEnable(){
 		TapController.OnPlayerDied += OnPlayerDied;
 		TapController.OnPlayerScored += OnPlayerScored;
+		CountdownText.OnCountdownFinished += OnCountdownFinished;
 	
 	}
 
@@ -47,10 +55,13 @@ public class GameManager : MonoBehaviour {
 
 	void OnCountdownFinished(){
 		SetPageState (PageState.None);
-		OnGameStarted ();
+		if(OnGameStarted != null)
+        {
+			OnGameStarted();
+		}
+		
 		score = 0;
 		gameOver = false;
-	
 	}
 
 	void OnPlayerDied(){
