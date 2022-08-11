@@ -20,7 +20,12 @@ public class CountdownText : MonoBehaviour {
 	
 	}
 
-	IEnumerator Countdown(){
+    void OnDisable()
+    {
+		Debug.Log("test disable");
+    }
+
+    IEnumerator Countdown(){
 		int count = 3;
 		for (int i = 0; i < count; i++) {
 			countdown.text = (count - i).ToString();
@@ -29,6 +34,6 @@ public class CountdownText : MonoBehaviour {
 		
 		}
 	
-		OnCountdownFinished ();
+		OnCountdownFinished();
 	}
 }
