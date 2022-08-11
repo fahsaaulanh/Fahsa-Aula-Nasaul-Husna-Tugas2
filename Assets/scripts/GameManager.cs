@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour {
 		Instance = this;
 	}
 
-    private void FixedUpdate()
+    void Update()
     {
 		int _highScore = PlayerPrefs.GetInt("highscore");
 		highScore.text = "HIgh Score : " + _highScore.ToString();
